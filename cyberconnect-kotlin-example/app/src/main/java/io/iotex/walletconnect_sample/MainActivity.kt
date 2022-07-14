@@ -51,15 +51,6 @@ class MainActivity : AppCompatActivity() {
                 WalletConnector.disconnect()
             }
 
-            mBtnSignTransaction.setOnClickListener {
-                testSignTransaction(address, 1)
-            }
-            mBtnSignTypedData.setOnClickListener {
-                testSignTypedData(address)
-            }
-            mBtnSign.setOnClickListener {
-                testSignMessage(address)
-            }
             mBtnPersonalSign.setOnClickListener {
                 testPersonalSignMessage(address)
             }
