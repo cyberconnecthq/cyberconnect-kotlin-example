@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/CyberConnectSample.iml" filepath="$PROJECT_DIR$/.idea/modules/CyberConnectSample.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/WalletConnect/CyberConnectSample.WalletConnect.iml" filepath="$PROJECT_DIR$/.idea/modules/WalletConnect/CyberConnectSample.WalletConnect.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/WalletConnect/CyberConnectSample.WalletConnect.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/WalletConnect/CyberConnectSample.WalletConnect.androidTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/WalletConnect/CyberConnectSample.WalletConnect.main.iml" filepath="$PROJECT_DIR$/.idea/modules/WalletConnect/CyberConnectSample.WalletConnect.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/WalletConnect/CyberConnectSample.WalletConnect.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/WalletConnect/CyberConnectSample.WalletConnect.unitTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/CyberConnectSample.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/CyberConnectSample.app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/CyberConnectSample.app.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/app/CyberConnectSample.app.androidTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/CyberConnectSample.app.main.iml" filepath="$PROJECT_DIR$/.idea/modules/app/CyberConnectSample.app.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/CyberConnectSample.app.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/app/CyberConnectSample.app.unitTest.iml" />
+    </modules>
+  </component>
+</project>
