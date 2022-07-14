@@ -40,14 +40,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:text="disconnect"
+            android:text="Disconnect"
             android:textAllCaps="false" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:text="Actions"
+            android:text="Actions step by step to learn cyberconnect basic functions"
             android:textSize="18sp" />
 
         <Button
@@ -55,7 +55,39 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:text="personal_sign"
+            android:text="1. Get wallet authority for using CyberConnect"
+            android:textAllCaps="false" />
+
+        <Button
+            android:id="@+id/mBtnGetIdentity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="2. GetIdentity"
+            android:textAllCaps="false" />
+
+        <Button
+            android:id="@+id/mBtnFollow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="3. Follow"
+            android:textAllCaps="false" />
+
+        <Button
+            android:id="@+id/mBtnSetAlia"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="4. Set Alias"
+            android:textAllCaps="false" />
+
+        <Button
+            android:id="@+id/mBtnUnFollow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="5. UnFollow"
             android:textAllCaps="false" />
 
     </LinearLayout>
