@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context="cyberconnect_sample.MainActivity">
 
     <androidx.appcompat.widget.AppCompatImageButton
         android:id="@+id/mBtnConnect"
@@ -51,7 +51,7 @@
             android:textSize="18sp" />
 
         <Button
-            android:id="@+id/mBtnPersonalSign"
+            android:id="@+id/mBtnGetWalletAuthority"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
