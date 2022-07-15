@@ -1,11 +1,17 @@
 package cyberconnect_sample
 
 import android.os.Bundle
+import android.util.Base64
+import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.blankj.utilcode.util.ResourceUtils
 import com.blankj.utilcode.util.TimeUtils
+import cyberconnect_sample.cyberconnect.NetworkType
+import cyberconnect_sample.cyberconnect.Operation
+import cyberconnect_sample.cyberconnect.Utils
+import cyberconnect_sample.utils.*
 import io.iotex.walletconnect_sample.R
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -13,8 +19,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.web3j.crypto.StructuredDataEncoder
 import org.web3j.utils.Numeric
-import cyberconnect_sample.utils.*
 import java.math.BigInteger
+import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -49,6 +55,50 @@ class MainActivity : AppCompatActivity() {
             mBtnGetWalletAuthority.setOnClickListener {
                 testPersonalSignMessage(address)
             }
+
+            mBtnGetIdentity.setOnClickListener {
+                val currentDate = Date()
+                val timestamp = currentDate.time
+
+                val operation = Operation("follow", address, "0x8ec10310c36bb8300d57df7f705b59838e1f56aa", "CyberConnect", NetworkType.ETH, "", timestamp)
+                val operationString = operation.toString()
+                Log.d("operation:", operationString)
+
+
+//                let operationData = try JSONEncoder().encode(operation)
+//                let signature = try privateKey.signature(for: operationData)
+//                    let signatureString = "0x\(signature.rawRepresentation.hexEncodedString())"
+//                    let operationString = String(data: operationData, encoding: .utf8)!
+//                    let signKeyString = privateKey.publicKey.pemRepresentation.pemRepresentationContent()
+//                    let variables = Variables(fromAddr: fromAddress, toAddr: toAddress, namespace: "CyberConnect", alias: alias, signature: signatureString, operation: operationString, signingKey: signKeyString, network: network)
+//                    let input = Input(input: variables)
+//                    let query = isConnect ? "mutation connect($input: UpdateConnectionInput!) {connect(input: $input) {result}}" : "mutation disconnect($input: UpdateConnectionInput!) {disconnect(input: $input) {result}}"
+//                    let operationInputData = OperationInputData(operationName: isConnect ? "connect" : "disconnect", query: query, variables: input)
+//                    let jsonData = try JSONEncoder().encode(operationInputData)
+//                        let requestString = String(data: jsonData, encoding: .utf8)!
+//                        NetworkRequestManager().postRequest(body: requestString, completionHandler: compeletion)
+
+
+
+
+
+
+
+
+
+
+
+
+                //val signature = Utils().signMessage(address, );
+
+            }
+
+
+
+
+
+
+
         }
     }
 
@@ -143,18 +193,31 @@ class MainActivity : AppCompatActivity() {
 
     private fun testPersonalSignMessage(address: String) {
         lifecycleScope.launch(errorHandler) {
-            val message = "My email is john@doe.com - ${TimeUtils.getNowString()}"
-            val hexMsg = message.toByteArray().toHexString()
+            val key = Utils().getKey(address)
+            val keypair = Utils().retrieveCyberConnectSignKey(key)
+            val publicKeyString = Base64.encodeToString(keypair.public.encoded, Base64.NO_WRAP)
+            val authorizeString = Utils().getAuthorizeString(publicKeyString)
+            val hexMsg = authorizeString.toByteArray().toHexString()
             val params = listOf(hexMsg, address)
             val dialog = ValidateDialog(this@MainActivity).show()
             val response = WalletConnector.personalSign(params)
+            Log.e("address:", address)
+            Log.e("authorizeString:", authorizeString)
+            Log.e("response:", response.toString())
             if (response.result != null) {
-                val valid = EncryptUtil.validateSignature(response.result.toString(), message, address)
+                val valid = EncryptUtil.validateSignature(response.result.toString(), authorizeString, address)
                 dialog.setMethod("eth_signTypedData")
                     .setAddress(address)
                     .setValid(valid.toString())
                     .setResult(response.result as String)
                     .renderConnect()
+
+
+
+
+
+
+
             }
         }
     }
