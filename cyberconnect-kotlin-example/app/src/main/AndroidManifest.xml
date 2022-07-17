@@ -12,6 +12,7 @@
         android:supportsRtl="true"
         android:name="cyberconnect_sample.MainApp"
         android:theme="@style/Theme.WalletConnectSample">
+        android:usesCleartextTraffic="true"
         <activity
             android:name="cyberconnect_sample.MainActivity"
             android:exported="true"

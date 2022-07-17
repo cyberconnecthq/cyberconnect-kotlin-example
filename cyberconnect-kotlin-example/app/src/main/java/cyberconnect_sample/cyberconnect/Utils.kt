@@ -5,6 +5,7 @@ import android.security.keystore.KeyProperties
 import android.util.Base64
 import android.util.Log
 import androidx.annotation.NonNull
+import cyberconnect_sample.utils.toHexString
 import java.security.*
 
 public final class Utils {
@@ -44,11 +45,36 @@ public final class Utils {
             Log.w("TAG", "Not an instance of a PrivateKeyEntry")
             return null
         }
+        //3742840875962924207
+        //3742840875962924207
+        //115792089210356248762697446949407573529996955224135760342422259061068512044369
         val signature: ByteArray = Signature.getInstance("SHA256withECDSA").run {
             initSign(entry.privateKey)
             update(data)
             sign()
         }
-        return Base64.encodeToString(signature, Base64.NO_WRAP)
+
+        return signature.toHexString()
     }
+
+    fun getPublicKeyString(address: String): String? {
+        val keyString = getKey(address)
+        val ks: KeyStore = KeyStore.getInstance("AndroidKeyStore").apply {
+            load(null)
+        }
+        val entry: KeyStore.Entry = ks.getEntry(keyString, null)
+        if (entry !is KeyStore.PrivateKeyEntry) {
+            Log.w("TAG", "Not an instance of a PrivateKeyEntry")
+            return null
+        }
+
+        val certificate = ks.getCertificate(keyString)
+        val publicKey = certificate.publicKey
+        return Base64.encodeToString(publicKey.encoded, Base64.NO_WRAP)
+    }
+
+
+
+
+
 }
