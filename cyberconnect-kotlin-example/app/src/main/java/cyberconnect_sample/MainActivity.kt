@@ -8,6 +8,7 @@ import androidx.lifecycle.lifecycleScope
 import com.blankj.utilcode.util.ResourceUtils
 import com.blankj.utilcode.util.TimeUtils
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import cyberconnect_sample.cyberconnect.*
 import cyberconnect_sample.utils.*
 import io.iotex.walletconnect_sample.R
@@ -22,6 +23,7 @@ import okio.IOException
 import org.web3j.crypto.StructuredDataEncoder
 import org.web3j.utils.Numeric
 import java.math.BigInteger
+import java.security.Signature
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
@@ -72,6 +74,7 @@ class MainActivity : AppCompatActivity() {
 
                 val signature = Utils().signMessage(address, operationJsonString)
                 val publicKey = Utils().getPublicKeyString(address)
+
                 if (signature != null) {
                     val variables = Variables(
                         fromAddr = address,
@@ -88,16 +91,9 @@ class MainActivity : AppCompatActivity() {
                     val operationInputData = OperationInputData("connect", queryString, input)
                     val operationInputDataJsonString: String = gson.toJson(operationInputData)
 
-                    Log.d("operationJsonString:", operationJsonString)
-                    if (publicKey != null) {
-                        Log.d("publicKey:", publicKey)
-                    }
-                    if (publicKey != null) {
-                        Log.d("signature:", signature)
-                    }
-
-
-
+                    val gsonPrettyPrinter = GsonBuilder().setPrettyPrinting().create()
+                    val operationDataJsonStringPretty = gsonPrettyPrinter.toJson(operationInputData)
+                    Log.d("operationDataJsonStringPretty",operationDataJsonStringPretty)
 
                     val client = OkHttpClient()
                     val mediaType = "application/json; charset=utf-8".toMediaType()
@@ -117,6 +113,13 @@ class MainActivity : AppCompatActivity() {
                         }
                     })
                 }
+            }
+
+            mBtnSetAlia.setOnClickListener {
+                Utils().getPublicKeyString(address)?.let { it1 -> Log.d("public key1", it1) }
+                Utils().getPublicKeyString(address)?.let { it1 -> Log.d("public key2", it1) }
+                Utils().getPublicKeyString(address)?.let { it1 -> Log.d("public key3", it1) }
+                Utils().getPublicKeyString(address)?.let { it1 -> Log.d("public key4", it1) }
             }
         }
     }
@@ -195,7 +198,6 @@ class MainActivity : AppCompatActivity() {
                     .setResult(response.result.toString())
                     .renderConnect()
             }
-
         }
     }
 
@@ -252,15 +254,10 @@ class MainActivity : AppCompatActivity() {
                     .renderConnect()
 
                 if (authorizeString != null) {
-                    NetworkRequestManager().registerKey(address, authorizeString, NetworkType.ETH){ result ->
+                    NetworkRequestManager().registerKey(address, publicKeyString, response.result.toString(), NetworkType.ETH){ result ->
                         Log.d("registerKey:", result)
                     }
                 }
-
-
-
-
-
             }
         }
     }

@@ -1,10 +1,12 @@
 package cyberconnect_sample.cyberconnect
 import android.util.Log
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.IOException
+import java.security.PublicKey
 
 class NetworkRequestManager {
     fun getIdentity(address: String, updateResults: (result: String) -> Int) {
@@ -40,10 +42,10 @@ class NetworkRequestManager {
         })
     }
 
-    fun registerKey(address: String, signature: String, network: NetworkType, updateResults: (result: String) -> Int) {
+    fun registerKey(address: String, publicKeyString: String, signature: String, network: NetworkType, updateResults: (result: String) -> Int) {
         val client = OkHttpClient()
-        val publicKey = Utils().getPublicKeyString(address)
-        val message = "I authorize CyberConnect from this device using signing key:\n${publicKey}"
+        //val publicKey = Utils().getPublicKeyString(address)
+        val message = "I authorize CyberConnect from this device using signing key:\n${publicKeyString}"
 
         val variable = Variables(address = address, signature = signature, network = network, message = message)
 
@@ -52,6 +54,11 @@ class NetworkRequestManager {
 
         val gson = Gson()
         val operationDataJsonString: String = gson.toJson(operationInputData)
+
+        val gsonPrettyPrinter = GsonBuilder().setPrettyPrinting().create()
+        val operationDataJsonStringPretty = gsonPrettyPrinter.toJson(operationInputData)
+        Log.d("operationDataJsonStringPretty",operationDataJsonStringPretty)
+
         val mediaType = "application/json; charset=utf-8".toMediaType()
         val body = operationDataJsonString.toRequestBody(mediaType)
         val request = Request.Builder()
@@ -76,14 +83,6 @@ class NetworkRequestManager {
             }
         })
     }
-
-
-
-
-
-
-
-
 }
 
 data class OperationData (
