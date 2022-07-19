@@ -17,7 +17,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
 import okio.IOException
 import org.web3j.crypto.StructuredDataEncoder
@@ -70,65 +69,62 @@ class MainActivity : AppCompatActivity() {
                 val operation = Operation("follow", address, "0x8ec10310c36bb8300d57df7f705b59838e1f56aa", "CyberConnect", NetworkType.ETH, "", timestamp)
                 val gson = Gson()
                 val operationJsonString: String = gson.toJson(operation)
-                Log.d("operationJsonString:", operationJsonString)
 
                 val signature = Utils().signMessage(address, operationJsonString)
+                val publicKey = Utils().getPublicKeyString(address)
                 if (signature != null) {
-                    Log.d("signature:", signature)
+                    val variables = Variables(
+                        fromAddr = address,
+                        toAddr = "0x8ec10310c36bb8300d57df7f705b59838e1f56aa",
+                        alias = "",
+                        namespace = "CyberConnect",
+                        signature = signature,
+                        operation = operationJsonString,
+                        signingKey = publicKey,
+                        network = NetworkType.ETH
+                    )
+                    val input = Input(variables)
+                    val queryString = "mutation connect(\$input: UpdateConnectionInput!) {connect(input: \$input) {result}}"
+                    val operationInputData = OperationInputData("connect", queryString, input)
+                    val operationInputDataJsonString: String = gson.toJson(operationInputData)
+
+                    Log.d("operationJsonString:", operationJsonString)
+                    if (publicKey != null) {
+                        Log.d("publicKey:", publicKey)
+                    }
+                    if (publicKey != null) {
+                        Log.d("signature:", signature)
+                    }
+
+
+
+
+                    val client = OkHttpClient()
+                    val mediaType = "application/json; charset=utf-8".toMediaType()
+                    val body = operationInputDataJsonString.toRequestBody(mediaType)
+                    val request = Request.Builder()
+                        .url("https://api.cybertino.io/connect/")
+                        .post(body)
+                        .build()
+
+                    client.newCall(request).enqueue(object : Callback {
+                        override fun onFailure(call: Call, e: IOException) {
+                            Log.d("failure:", e.toString())
+                        }
+
+                        override fun onResponse(call: Call, response: Response) {
+                            Log.d("success:", "response: ${response.body?.string()}")
+                        }
+                    })
                 }
-
-                val utils = Utils()
-                val publicKey1 = utils.getPublicKeyString(address)
-                if (publicKey1 != null) {
-                    Log.d("publicKey1:", publicKey1)
-                }
-
-//                let operationData = try JSONEncoder().encode(operation)
-//                let signature = try privateKey.signature(for: operationData)
-//                    let signatureString = "0x\(signature.rawRepresentation.hexEncodedString())"
-//                    let operationString = String(data: operationData, encoding: .utf8)!
-//                    let signKeyString = privateKey.publicKey.pemRepresentation.pemRepresentationContent()
-//                    let variables = Variables(fromAddr: fromAddress, toAddr: toAddress, namespace: "CyberConnect", alias: alias, signature: signatureString, operation: operationString, signingKey: signKeyString, network: network)
-//                    let input = Input(input: variables)
-//                    let query = isConnect ? "mutation connect($input: UpdateConnectionInput!) {connect(input: $input) {result}}" : "mutation disconnect($input: UpdateConnectionInput!) {disconnect(input: $input) {result}}"
-//                    let operationInputData = OperationInputData(operationName: isConnect ? "connect" : "disconnect", query: query, variables: input)
-//                    let jsonData = try JSONEncoder().encode(operationInputData)
-//                        let requestString = String(data: jsonData, encoding: .utf8)!
-//                        NetworkRequestManager().postRequest(body: requestString, completionHandler: compeletion)
-
-
             }
-
-
-
-
-
         }
     }
 
-    fun getIdentity(address: String) {
-        val client = OkHttpClient()
-        val valriables = Variables(address = address, first = 100)
-        val operationString = "query GetIdentity(\$address: String!, \$first: Int, \$after: String) {\n  identity(address: \$address) {\n    address\n    domain\n    twitter {\n      handle\n      verified\n      __typename\n    }\n    avatar\n    followerCount(namespace: \"\")\n    followingCount(namespace: \"\")\n    followings(first: \$first, after: \$after, namespace: \"\") {\n      pageInfo {\n        ...PageInfo\n        __typename\n      }\n      list {\n        ...Connect\n        __typename\n      }\n      __typename\n    }\n    followers(first: \$first, after: \$after, namespace: \"\") {\n      pageInfo {\n        ...PageInfo\n        __typename\n      }\n      list {\n        ...Connect\n        __typename\n      }\n      __typename\n    }\n    friends(first: \$first, after: \$after, namespace: \"\") {\n      pageInfo {\n        ...PageInfo\n        __typename\n      }\n      list {\n        ...Connect\n        __typename\n      }\n      __typename\n    }\n    __typename\n  }\n}\n\nfragment PageInfo on PageInfo {\n  startCursor\n  endCursor\n  hasNextPage\n  hasPreviousPage\n  __typename\n}\n\nfragment Connect on Connect {\n  address\n  domain\n  alias\n  namespace\n  __typename\n}\n"
-        val operationData = OperationData("GetIdentity", operationString, valriables)
-        val gson = Gson()
-        val operationDataJsonString: String = gson.toJson(operationData)
-        val mediaType = "application/json; charset=utf-8".toMediaType()
-        val body = operationDataJsonString.toRequestBody(mediaType)
-        val request = Request.Builder()
-            .url("https://api.cybertino.io/connect/")
-            .post(body)
-            .build()
-
-        client.newCall(request).enqueue(object : Callback {
-             override fun onFailure(call: Call, e: IOException) {
-                 Log.d("failure:", e.toString())
-             }
-
-             override fun onResponse(call: Call, response: Response) {
-                 Log.d("success:", "response: ${response.body?.string()}")
-             }
-        })
+    private fun getIdentity(address: String) {
+        NetworkRequestManager().getIdentity(address){ result ->
+            Log.d("getIdentity:", result)
+        }
     }
 
     private fun onDisconnected() {
@@ -234,7 +230,6 @@ class MainActivity : AppCompatActivity() {
             val publicKeyString = Utils().getPublicKeyString(address)
             val authorizeString = publicKeyString?.let {
                 Utils().getAuthorizeString(it)
-
             }
             val hexMsg = authorizeString?.toByteArray()?.toHexString()
             val params = listOf(hexMsg, address)
@@ -256,7 +251,11 @@ class MainActivity : AppCompatActivity() {
                     .setResult(response.result as String)
                     .renderConnect()
 
-
+                if (authorizeString != null) {
+                    NetworkRequestManager().registerKey(address, authorizeString, NetworkType.ETH){ result ->
+                        Log.d("registerKey:", result)
+                    }
+                }
 
 
 
