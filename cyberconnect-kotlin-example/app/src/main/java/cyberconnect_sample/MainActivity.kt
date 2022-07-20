@@ -3,10 +3,12 @@ package cyberconnect_sample
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.blankj.utilcode.util.ResourceUtils
 import com.blankj.utilcode.util.TimeUtils
+import com.blankj.utilcode.util.ToastUtils
 import cyberconnect_sample.cyberconnect.*
 import cyberconnect_sample.utils.*
 import io.iotex.walletconnect_sample.R
@@ -56,25 +58,25 @@ class MainActivity : AppCompatActivity() {
 
             mBtnGetIdentity.setOnClickListener {
                 cyberconnectInstance?.getIdentity { result ->
-                    Log.d("getIdentity:", result)
+                    ToastUtils.showLong("getIdentity:${result}")
                 }
             }
 
             mBtnFollow.setOnClickListener {
                 cyberconnectInstance?.connect("0xf6b6f07862a02c85628b3a9688beae07fea9c863","", NetworkType.ETH, ConnectionType.follow) { result ->
-                    Log.d("connect:", result)
+                    ToastUtils.showLong("connect:${result}")
                 }
             }
 
             mBtnSetAlia.setOnClickListener {
-                NetworkRequestManager().setAlias(address, "0xf6b6f07862a02c85628b3a9688beae07fea9c863","Hello", NetworkType.ETH){ result ->
-                    Log.d("setAlias:", result)
+                cyberconnectInstance?.setAlias("0xf6b6f07862a02c85628b3a9688beae07fea9c863","Hello", NetworkType.ETH){ result ->
+                    ToastUtils.showLong("setAlias:${result}")
                 }
             }
 
             mBtnUnFollow.setOnClickListener {
                 cyberconnectInstance?.disconnect("0xf6b6f07862a02c85628b3a9688beae07fea9c863","", NetworkType.ETH, ConnectionType.follow){ result ->
-                    Log.d("disconnect:", result)
+                    ToastUtils.showLong("disconnect:${result}")
                 }
             }
         }

@@ -9,7 +9,7 @@ import java.io.IOException
 import java.util.*
 
 class NetworkRequestManager {
-    fun getIdentity(address: String, updateResults: (result: String) -> Int) {
+    fun getIdentity(address: String, updateResults: (result: String) -> Unit) {
         val client = OkHttpClient()
         val variables = Variables(address = address, first = 100)
         val operationString =
@@ -42,7 +42,7 @@ class NetworkRequestManager {
         })
     }
 
-    fun registerKey(address: String, signature: String, network: NetworkType, updateResults: (result: String) -> Int) {
+    fun registerKey(address: String, signature: String, network: NetworkType, updateResults: (result: String) -> Unit) {
         val client = OkHttpClient()
         val publicKeyString = Utils().getPublicKeyString(address)
         val message = "I authorize CyberConnect from this device using signing key:\n${publicKeyString}"
