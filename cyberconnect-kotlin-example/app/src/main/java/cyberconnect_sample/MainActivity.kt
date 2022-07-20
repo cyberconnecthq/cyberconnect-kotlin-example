@@ -35,6 +35,8 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private var cyberconnectInstance: CyberConnect? = null
+
     private fun onConnected(address: String, chainId: Long) {
         lifecycleScope.launch(Dispatchers.Main) {
             "address : $address -- chainId : $chainId".i()
@@ -43,7 +45,7 @@ class MainActivity : AppCompatActivity() {
 
             mTvAddress.text = "Address:$address"
             mTvChainId.text = "ChainID:$chainId"
-
+            cyberconnectInstance = CyberConnect(address)
             mBtnDisconnect.setOnClickListener {
                 WalletConnector.disconnect()
             }
@@ -53,24 +55,28 @@ class MainActivity : AppCompatActivity() {
             }
 
             mBtnGetIdentity.setOnClickListener {
-                getIdentity(address)
+                cyberconnectInstance?.getIdentity { result ->
+                    Log.d("getIdentity:", result)
+                }
             }
 
             mBtnFollow.setOnClickListener {
-                NetworkRequestManager().connect(address, "0xf6b6f07862a02c85628b3a9688beae07fea9c863","", NetworkType.ETH, ConnectionType.follow){ result ->
+                cyberconnectInstance?.connect("0xf6b6f07862a02c85628b3a9688beae07fea9c863","", NetworkType.ETH, ConnectionType.follow) { result ->
                     Log.d("connect:", result)
                 }
             }
 
             mBtnSetAlia.setOnClickListener {
-
+                NetworkRequestManager().setAlias(address, "0xf6b6f07862a02c85628b3a9688beae07fea9c863","Hello", NetworkType.ETH){ result ->
+                    Log.d("setAlias:", result)
+                }
             }
-        }
-    }
 
-    private fun getIdentity(address: String) {
-        NetworkRequestManager().getIdentity(address){ result ->
-            Log.d("getIdentity:", result)
+            mBtnUnFollow.setOnClickListener {
+                cyberconnectInstance?.disconnect("0xf6b6f07862a02c85628b3a9688beae07fea9c863","", NetworkType.ETH, ConnectionType.follow){ result ->
+                    Log.d("disconnect:", result)
+                }
+            }
         }
     }
 
@@ -198,7 +204,7 @@ class MainActivity : AppCompatActivity() {
                     .renderConnect()
 
                 if (authorizeString != null) {
-                    NetworkRequestManager().registerKey(address, publicKeyString, response.result.toString(), NetworkType.ETH){ result ->
+                    cyberconnectInstance?.registerKey(response.result.toString(), NetworkType.ETH) { result ->
                         Log.d("registerKey:", result)
                     }
                 }

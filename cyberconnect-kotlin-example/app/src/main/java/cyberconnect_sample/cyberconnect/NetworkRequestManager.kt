@@ -1,5 +1,4 @@
 package cyberconnect_sample.cyberconnect
-import android.annotation.SuppressLint
 import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -7,7 +6,6 @@ import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.IOException
-import java.security.PublicKey
 import java.util.*
 
 class NetworkRequestManager {
@@ -44,8 +42,9 @@ class NetworkRequestManager {
         })
     }
 
-    fun registerKey(address: String, publicKeyString: String, signature: String, network: NetworkType, updateResults: (result: String) -> Int) {
+    fun registerKey(address: String, signature: String, network: NetworkType, updateResults: (result: String) -> Int) {
         val client = OkHttpClient()
+        val publicKeyString = Utils().getPublicKeyString(address)
         val message = "I authorize CyberConnect from this device using signing key:\n${publicKeyString}"
         val variable = Variables(address = address, signature = signature, network = network, message = message)
 
@@ -85,10 +84,22 @@ class NetworkRequestManager {
     }
 
     fun connect(fromAddr: String, toAddr: String, alias: String, network: NetworkType, connectType: ConnectionType, updateResults: (result: String) -> Unit) {
-        val currentDate = Date()
-        val timestamp = currentDate.time
+        connectOrDisconnect(true, fromAddr, toAddr, alias, network, connectType, updateResults)
+    }
 
-        val operation = Operation("follow", fromAddr, toAddr, "CyberConnect", NetworkType.ETH, "", timestamp)
+    fun disconnect(fromAddr: String, toAddr: String, alias: String, network: NetworkType, connectType: ConnectionType, updateResults: (result: String) -> Unit) {
+        connectOrDisconnect(false, fromAddr, toAddr, alias, network, connectType, updateResults)
+    }
+
+    private fun connectOrDisconnect(isConnect: Boolean, fromAddr: String, toAddr: String, alias: String, network: NetworkType, connectType: ConnectionType, updateResults: (result: String) -> Unit) {
+        val timestamp = Date().time
+
+        var connectKeyWord = "unfollow"
+        if (isConnect) {
+            connectKeyWord = "follow"
+        }
+
+        val operation = Operation(connectKeyWord, fromAddr, toAddr, "CyberConnect", network, alias, timestamp)
         val gson = GsonBuilder().disableHtmlEscaping().create()
         val operationJsonString: String = gson.toJson(operation)
 
@@ -99,16 +110,22 @@ class NetworkRequestManager {
             val variables = Variables(
                 fromAddr = fromAddr,
                 toAddr = toAddr,
-                alias = "",
+                alias = alias,
                 namespace = "CyberConnect",
                 signature = signature,
                 operation = operationJsonString,
                 signingKey = publicKey,
-                network = NetworkType.ETH
+                network = network
             )
             val input = Input(variables)
-            val queryString = "mutation connect(\$input: UpdateConnectionInput!) {connect(input: \$input) {result}}"
-            val operationInputData = OperationInputData("connect", queryString, input)
+            var queryString = "mutation disconnect(\$input: UpdateConnectionInput!) {disconnect(input: \$input) {result}}"
+            var operationName = "disconnect"
+            if (isConnect) {
+                queryString = "mutation connect(\$input: UpdateConnectionInput!) {connect(input: \$input) {result}}"
+                operationName = "connect"
+            }
+
+            val operationInputData = OperationInputData(operationName, queryString, input)
             val operationInputDataJsonString: String = gson.toJson(operationInputData)
 
             val gsonPrettyPrinter = GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create()
@@ -139,6 +156,56 @@ class NetworkRequestManager {
                 }
             })
         }
+    }
+
+    fun setAlias(fromAddress: String, toAddress: String, alias: String, network: NetworkType, updateResults: (result: String) -> Unit) {
+        val timestamp = Date().time
+        val operation = Operation("follow", fromAddress, toAddress, "CyberConnect", network, alias, timestamp)
+
+        val gson = GsonBuilder().disableHtmlEscaping().create()
+        val operationJsonString: String = gson.toJson(operation)
+
+        val signature = Utils().signMessage(fromAddress, operationJsonString)
+        val publicKey = Utils().getPublicKeyString(fromAddress)
+
+        val variables = Variables(
+            fromAddr = fromAddress,
+            toAddr = toAddress,
+            alias = alias,
+            namespace = "CyberConnect",
+            signature = signature,
+            operation = operationJsonString,
+            signingKey = publicKey,
+            network = network
+        )
+        val input = Input(variables)
+        val query = "mutation alias(\$input: UpdateConnectionInput!) {alias(input: \$input) {result}}"
+        val operationInputData = OperationInputData("alias", query, input)
+        val operationInputDataJsonString: String = gson.toJson(operationInputData)
+
+        val client = OkHttpClient()
+        val mediaType = "application/json; charset=utf-8".toMediaType()
+        val body = operationInputDataJsonString.toRequestBody(mediaType)
+        val request = Request.Builder()
+            .url("https://api.cybertino.io/connect/")
+            .post(body)
+            .build()
+
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                updateResults(e.toString())
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                val result = response.body?.string()
+                if (result != null) {
+                    Log.d("success:", "response: ${result}")
+                    updateResults(result)
+                } else {
+                    updateResults("response null")
+                }
+            }
+        })
     }
 }
 
