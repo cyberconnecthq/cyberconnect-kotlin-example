@@ -119,6 +119,7 @@
                 <arg>$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.walletconnect/kotlin-walletconnect-lib/0.9.8/48d43010f4300806e9ad2d2f4eeda4a162b49916/kotlin-walletconnect-lib-0.9.8.jar</arg>
                 <arg>$USER_HOME$/.gradle/caches/transforms-3/6c8583149dc87cea3d7b73f5cd43cdb3/transformed/utilcodex-1.31.0-api.jar</arg>
                 <arg>$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.code.gson/gson/2.8.5/f645ed69d595b24d4cf8b3fbb64cc505bede8829/gson-2.8.5.jar</arg>
+                <arg>$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.madgag.spongycastle/core/1.50.0.0/13e93b00ec9790315debd61fa25ab6a47d3a1c52/core-1.50.0.0.jar</arg>
                 <arg>$USER_HOME$/Library/Android/sdk/platforms/android-32/android.jar</arg>
                 <arg>$USER_HOME$/Library/Android/sdk/build-tools/30.0.3/core-lambda-stubs.jar</arg>
               </args>
@@ -246,6 +247,7 @@
     <orderEntry type="library" name="Gradle: com.google.code.gson:gson:2.8.5" level="project" />
     <orderEntry type="library" name="Gradle: com.squareup.retrofit2:adapter-rxjava2:2.6.0" level="project" />
     <orderEntry type="library" name="Gradle: org.bouncycastle:bcprov-jdk15to18:1.68" level="project" />
+    <orderEntry type="library" name="Gradle: com.madgag.spongycastle:core:1.50.0.0" level="project" />
     <orderEntry type="library" name="Gradle: androidx.databinding:viewbinding:7.2.1@aar" level="project" />
     <orderEntry type="library" name="Gradle: androidx.core:core-ktx:1.7.0@aar" level="project" />
     <orderEntry type="library" name="Gradle: androidx.core:core:1.7.0@aar" level="project" />

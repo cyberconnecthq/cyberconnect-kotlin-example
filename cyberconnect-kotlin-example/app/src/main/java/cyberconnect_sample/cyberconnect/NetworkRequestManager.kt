@@ -1,4 +1,5 @@
 package cyberconnect_sample.cyberconnect
+import android.annotation.SuppressLint
 import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -7,6 +8,7 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.IOException
 import java.security.PublicKey
+import java.util.*
 
 class NetworkRequestManager {
     fun getIdentity(address: String, updateResults: (result: String) -> Int) {
@@ -44,18 +46,16 @@ class NetworkRequestManager {
 
     fun registerKey(address: String, publicKeyString: String, signature: String, network: NetworkType, updateResults: (result: String) -> Int) {
         val client = OkHttpClient()
-        //val publicKey = Utils().getPublicKeyString(address)
         val message = "I authorize CyberConnect from this device using signing key:\n${publicKeyString}"
-
         val variable = Variables(address = address, signature = signature, network = network, message = message)
 
         val input = Input(variable)
         val operationInputData = OperationInputData("registerKey", "mutation registerKey(\$input: RegisterKeyInput!) {\n      registerKey(input: \$input) {\n        result\n      }\n    }", input)
 
-        val gson = Gson()
+        val gson = GsonBuilder().disableHtmlEscaping().create()
         val operationDataJsonString: String = gson.toJson(operationInputData)
 
-        val gsonPrettyPrinter = GsonBuilder().setPrettyPrinting().create()
+        val gsonPrettyPrinter = GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create()
         val operationDataJsonStringPretty = gsonPrettyPrinter.toJson(operationInputData)
         Log.d("operationDataJsonStringPretty",operationDataJsonStringPretty)
 
@@ -74,14 +74,71 @@ class NetworkRequestManager {
 
             override fun onResponse(call: Call, response: Response) {
                 val result = response.body?.string()
-                Log.d("success:", "response: result")
                 if (result != null) {
+                    Log.d("success:", "response: ${result}")
                     updateResults(result)
                 } else {
                     updateResults("response null")
                 }
             }
         })
+    }
+
+    fun connect(fromAddr: String, toAddr: String, alias: String, network: NetworkType, connectType: ConnectionType, updateResults: (result: String) -> Unit) {
+        val currentDate = Date()
+        val timestamp = currentDate.time
+
+        val operation = Operation("follow", fromAddr, toAddr, "CyberConnect", NetworkType.ETH, "", timestamp)
+        val gson = GsonBuilder().disableHtmlEscaping().create()
+        val operationJsonString: String = gson.toJson(operation)
+
+        val signature = Utils().signMessage(fromAddr, operationJsonString)
+        val publicKey = Utils().getPublicKeyString(fromAddr)
+
+        if (signature != null) {
+            val variables = Variables(
+                fromAddr = fromAddr,
+                toAddr = toAddr,
+                alias = "",
+                namespace = "CyberConnect",
+                signature = signature,
+                operation = operationJsonString,
+                signingKey = publicKey,
+                network = NetworkType.ETH
+            )
+            val input = Input(variables)
+            val queryString = "mutation connect(\$input: UpdateConnectionInput!) {connect(input: \$input) {result}}"
+            val operationInputData = OperationInputData("connect", queryString, input)
+            val operationInputDataJsonString: String = gson.toJson(operationInputData)
+
+            val gsonPrettyPrinter = GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create()
+            val operationDataJsonStringPretty = gsonPrettyPrinter.toJson(operationInputData)
+            Log.d("operationDataJsonStringPretty",operationDataJsonStringPretty)
+
+            val client = OkHttpClient()
+            val mediaType = "application/json; charset=utf-8".toMediaType()
+            val body = operationInputDataJsonString.toRequestBody(mediaType)
+            val request = Request.Builder()
+                .url("https://api.cybertino.io/connect/")
+                .post(body)
+                .build()
+
+            client.newCall(request).enqueue(object : Callback {
+                override fun onFailure(call: Call, e: IOException) {
+                    updateResults(e.toString())
+                }
+
+                override fun onResponse(call: Call, response: Response) {
+                    val result = response.body?.string()
+                    if (result != null) {
+                        Log.d("success:", "response: ${result}")
+                        updateResults(result)
+                    } else {
+                        updateResults("response null")
+                    }
+                }
+            })
+        }
     }
 }
 
@@ -130,4 +187,12 @@ data class Variables(
 enum class NetworkType {
     ETH,
     SOL
+}
+
+enum class ConnectionType {
+    follow,
+    like,
+    report,
+    watch,
+    vote
 }

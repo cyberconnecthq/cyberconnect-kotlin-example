@@ -7,8 +7,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.blankj.utilcode.util.ResourceUtils
 import com.blankj.utilcode.util.TimeUtils
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
 import cyberconnect_sample.cyberconnect.*
 import cyberconnect_sample.utils.*
 import io.iotex.walletconnect_sample.R
@@ -16,15 +14,9 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import okhttp3.*
-import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.RequestBody.Companion.toRequestBody
-import okio.IOException
 import org.web3j.crypto.StructuredDataEncoder
 import org.web3j.utils.Numeric
 import java.math.BigInteger
-import java.security.Signature
-import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -65,61 +57,13 @@ class MainActivity : AppCompatActivity() {
             }
 
             mBtnFollow.setOnClickListener {
-                val currentDate = Date()
-                val timestamp = currentDate.time
-
-                val operation = Operation("follow", address, "0x8ec10310c36bb8300d57df7f705b59838e1f56aa", "CyberConnect", NetworkType.ETH, "", timestamp)
-                val gson = Gson()
-                val operationJsonString: String = gson.toJson(operation)
-
-                val signature = Utils().signMessage(address, operationJsonString)
-                val publicKey = Utils().getPublicKeyString(address)
-
-                if (signature != null) {
-                    val variables = Variables(
-                        fromAddr = address,
-                        toAddr = "0x8ec10310c36bb8300d57df7f705b59838e1f56aa",
-                        alias = "",
-                        namespace = "CyberConnect",
-                        signature = signature,
-                        operation = operationJsonString,
-                        signingKey = publicKey,
-                        network = NetworkType.ETH
-                    )
-                    val input = Input(variables)
-                    val queryString = "mutation connect(\$input: UpdateConnectionInput!) {connect(input: \$input) {result}}"
-                    val operationInputData = OperationInputData("connect", queryString, input)
-                    val operationInputDataJsonString: String = gson.toJson(operationInputData)
-
-                    val gsonPrettyPrinter = GsonBuilder().setPrettyPrinting().create()
-                    val operationDataJsonStringPretty = gsonPrettyPrinter.toJson(operationInputData)
-                    Log.d("operationDataJsonStringPretty",operationDataJsonStringPretty)
-
-                    val client = OkHttpClient()
-                    val mediaType = "application/json; charset=utf-8".toMediaType()
-                    val body = operationInputDataJsonString.toRequestBody(mediaType)
-                    val request = Request.Builder()
-                        .url("https://api.cybertino.io/connect/")
-                        .post(body)
-                        .build()
-
-                    client.newCall(request).enqueue(object : Callback {
-                        override fun onFailure(call: Call, e: IOException) {
-                            Log.d("failure:", e.toString())
-                        }
-
-                        override fun onResponse(call: Call, response: Response) {
-                            Log.d("success:", "response: ${response.body?.string()}")
-                        }
-                    })
+                NetworkRequestManager().connect(address, "0xf6b6f07862a02c85628b3a9688beae07fea9c863","", NetworkType.ETH, ConnectionType.follow){ result ->
+                    Log.d("connect:", result)
                 }
             }
 
             mBtnSetAlia.setOnClickListener {
-                Utils().getPublicKeyString(address)?.let { it1 -> Log.d("public key1", it1) }
-                Utils().getPublicKeyString(address)?.let { it1 -> Log.d("public key2", it1) }
-                Utils().getPublicKeyString(address)?.let { it1 -> Log.d("public key3", it1) }
-                Utils().getPublicKeyString(address)?.let { it1 -> Log.d("public key4", it1) }
+
             }
         }
     }
