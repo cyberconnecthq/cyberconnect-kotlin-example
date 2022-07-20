@@ -8,13 +8,13 @@ cyberconnect-kotlin-example is a demo project based on
 #### 2. Generate a pair of P256 keys and save it in keychain
 #### 3. Sign a **message** with you wallet(should be pair with the address in step 1) and get the _signature_
 #### 4. You can get right format message:
-```
-let cyberconnectInstance = CyberConnect(WALLETADDRESS) //in step 1
-let message = cyberconnectInstance.getAuthorizeString() //use the pubkey of the pairs in step 2
+```kotlin
+val cyberconnectInstance = CyberConnect(WALLETADDRESS) //in step 1
+val message = cyberconnectInstance.getAuthorizeString() //use the pubkey of the pairs in step 2
 ```
 #### 5. Sign this message with your wallet and get signature
 ```
-let signature = signature //from step 3
+val signature = signature //from step 3
 cyberconnectInstance.registerKey(signature: signature, network: .eth) { data in
     print(data) 
 }
