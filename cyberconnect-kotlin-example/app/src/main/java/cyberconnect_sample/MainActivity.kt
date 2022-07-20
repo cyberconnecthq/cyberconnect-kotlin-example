@@ -3,13 +3,11 @@ package cyberconnect_sample
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.blankj.utilcode.util.ResourceUtils
 import com.blankj.utilcode.util.TimeUtils
 import com.blankj.utilcode.util.ToastUtils
-import cyberconnect_sample.cyberconnect.*
 import cyberconnect_sample.utils.*
 import io.iotex.walletconnect_sample.R
 import kotlinx.android.synthetic.main.activity_main.*
@@ -37,7 +35,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private var cyberconnectInstance: CyberConnect? = null
+    private var cyberconnectInstance: com.example.cyberconnect.CyberConnect? = null
 
     private fun onConnected(address: String, chainId: Long) {
         lifecycleScope.launch(Dispatchers.Main) {
@@ -47,7 +45,7 @@ class MainActivity : AppCompatActivity() {
 
             mTvAddress.text = "Address:$address"
             mTvChainId.text = "ChainID:$chainId"
-            cyberconnectInstance = CyberConnect(address)
+            cyberconnectInstance = com.example.cyberconnect.CyberConnect(address)
             mBtnDisconnect.setOnClickListener {
                 WalletConnector.disconnect()
             }
@@ -63,19 +61,19 @@ class MainActivity : AppCompatActivity() {
             }
 
             mBtnFollow.setOnClickListener {
-                cyberconnectInstance?.connect("0xf6b6f07862a02c85628b3a9688beae07fea9c863","", NetworkType.ETH, ConnectionType.follow) { result ->
+                cyberconnectInstance?.connect("0xf6b6f07862a02c85628b3a9688beae07fea9c863","", com.example.cyberconnect.NetworkType.ETH, com.example.cyberconnect.ConnectionType.follow) { result ->
                     ToastUtils.showLong("connect:${result}")
                 }
             }
 
             mBtnSetAlia.setOnClickListener {
-                cyberconnectInstance?.setAlias("0xf6b6f07862a02c85628b3a9688beae07fea9c863","Hello", NetworkType.ETH){ result ->
+                cyberconnectInstance?.setAlias("0xf6b6f07862a02c85628b3a9688beae07fea9c863","Hello", com.example.cyberconnect.NetworkType.ETH){ result ->
                     ToastUtils.showLong("setAlias:${result}")
                 }
             }
 
             mBtnUnFollow.setOnClickListener {
-                cyberconnectInstance?.disconnect("0xf6b6f07862a02c85628b3a9688beae07fea9c863","", NetworkType.ETH, ConnectionType.follow){ result ->
+                cyberconnectInstance?.disconnect("0xf6b6f07862a02c85628b3a9688beae07fea9c863","", com.example.cyberconnect.NetworkType.ETH, com.example.cyberconnect.ConnectionType.follow){ result ->
                     ToastUtils.showLong("disconnect:${result}")
                 }
             }
@@ -181,9 +179,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun testPersonalSignMessage(address: String) {
         lifecycleScope.launch(errorHandler) {
-            val publicKeyString = Utils().getPublicKeyString(address)
+            val publicKeyString = com.example.cyberconnect.Utils().getPublicKeyString(address)
             val authorizeString = publicKeyString?.let {
-                Utils().getAuthorizeString(it)
+                com.example.cyberconnect.Utils().getAuthorizeString(it)
             }
             val hexMsg = authorizeString?.toByteArray()?.toHexString()
             val params = listOf(hexMsg, address)
@@ -206,7 +204,7 @@ class MainActivity : AppCompatActivity() {
                     .renderConnect()
 
                 if (authorizeString != null) {
-                    cyberconnectInstance?.registerKey(response.result.toString(), NetworkType.ETH) { result ->
+                    cyberconnectInstance?.registerKey(response.result.toString(), com.example.cyberconnect.NetworkType.ETH) { result ->
                         Log.d("registerKey:", result)
                     }
                 }

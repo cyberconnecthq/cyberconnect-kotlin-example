@@ -1,8 +1,8 @@
-package cyberconnect_sample.cyberconnect
+package com.example.cyberconnect
 
 import androidx.annotation.NonNull
-import cyberconnect_sample.cyberconnect.store.CryptoKeyStore
-import cyberconnect_sample.utils.toHexString
+import com.example.cyberconnect.store.CryptoKeyStore
+import org.web3j.utils.Numeric
 
 class Utils {
     fun getAuthorizeString(@NonNull localPublicKeyPem: String): String {
@@ -47,4 +47,8 @@ class Utils {
     fun getPublicKeyString(address: String): String? {
         return CryptoKeyStore().getPublicKeyString(address)
     }
+}
+
+fun ByteArray.toHexString(): String {
+    return Numeric.toHexString(this)
 }

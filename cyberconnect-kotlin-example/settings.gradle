@@ -19,3 +19,4 @@ dependencyResolutionManagement {
 rootProject.name = "CyberConnectSample"
 include ':app'
 include ':WalletConnect'
+include ':CyberConnect'

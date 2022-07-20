@@ -1,4 +1,4 @@
-package cyberconnect_sample.cyberconnect
+package com.example.cyberconnect
 import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder

@@ -10,6 +10,7 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/CyberConnect" />
             <option value="$PROJECT_DIR$/WalletConnect" />
             <option value="$PROJECT_DIR$/app" />
           </set>

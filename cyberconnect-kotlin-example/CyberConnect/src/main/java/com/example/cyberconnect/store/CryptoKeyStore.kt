@@ -1,16 +1,19 @@
-package cyberconnect_sample.cyberconnect.store
+package com.example.cyberconnect.store
 
+import android.os.Build
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
 import android.util.Base64
 import android.util.Log
-import cyberconnect_sample.cyberconnect.Utils
-import cyberconnect_sample.utils.toHexString
+import androidx.annotation.RequiresApi
+import com.example.cyberconnect.Utils
+import com.example.cyberconnect.toHexString
 import java.nio.charset.StandardCharsets
 import java.security.*
 import java.security.cert.Certificate
 
 public final class CryptoKeyStore {
+    @RequiresApi(Build.VERSION_CODES.M)
     fun generateKeyPair(address: String): KeyPair {
         val keyString = Utils().getKey(address)
         val kpg: KeyPairGenerator = KeyPairGenerator.getInstance(
@@ -28,6 +31,7 @@ public final class CryptoKeyStore {
         return kpg.generateKeyPair()
     }
 
+    @RequiresApi(Build.VERSION_CODES.M)
     fun getPublicKeyString(address: String): String? {
         val keyString = Utils().getKey(address)
         val ks: KeyStore = KeyStore.getInstance("AndroidKeyStore").apply {
@@ -43,6 +47,7 @@ public final class CryptoKeyStore {
         return Base64.encodeToString(publicKey.encoded, Base64.NO_WRAP)
     }
 
+    @RequiresApi(Build.VERSION_CODES.M)
     fun signMessage(address: String, message: String): String? {
         val keyString = Utils().getKey(address)
         val data = message.toByteArray(StandardCharsets.UTF_8)

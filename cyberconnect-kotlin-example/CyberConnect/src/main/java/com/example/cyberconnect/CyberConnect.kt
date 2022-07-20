@@ -1,4 +1,4 @@
-package cyberconnect_sample.cyberconnect
+package com.example.cyberconnect
 
 class CyberConnect(private var walletAddress: String) {
     private val networkRequestManager = NetworkRequestManager()
