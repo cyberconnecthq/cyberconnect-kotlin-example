@@ -179,9 +179,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun testPersonalSignMessage(address: String) {
         lifecycleScope.launch(errorHandler) {
-            val publicKeyString = com.example.cyberconnect.Utils().getPublicKeyString(address)
+            val publicKeyString = cyberconnectInstance?.getPublicKeyString()
             val authorizeString = publicKeyString?.let {
-                com.example.cyberconnect.Utils().getAuthorizeString(it)
+                cyberconnectInstance?.getAuthorizeString(it)
             }
             val hexMsg = authorizeString?.toByteArray()?.toHexString()
             val params = listOf(hexMsg, address)

@@ -1,6 +1,8 @@
 package com.example.cyberconnect
 
+import android.os.Build
 import androidx.annotation.NonNull
+import androidx.annotation.RequiresApi
 import com.example.cyberconnect.store.CryptoKeyStore
 import org.web3j.utils.Numeric
 
@@ -13,6 +15,7 @@ class Utils {
         return "CyberConnectKey_${address}"
     }
 
+    @RequiresApi(Build.VERSION_CODES.M)
     fun signMessage(address: String, message: String): String? {
         return CryptoKeyStore().signMessage(address, message)
     }
@@ -44,6 +47,7 @@ class Utils {
         return res
     }
 
+    @RequiresApi(Build.VERSION_CODES.M)
     fun getPublicKeyString(address: String): String? {
         return CryptoKeyStore().getPublicKeyString(address)
     }
