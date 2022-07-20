@@ -3,8 +3,6 @@ package com.example.cyberconnect
 import android.os.Build
 import androidx.annotation.NonNull
 import androidx.annotation.RequiresApi
-import com.example.cyberconnect.store.CryptoKeyStore
-import java.security.PublicKey
 
 class CyberConnect(@NonNull private var walletAddress: String) {
     private val networkRequestManager = NetworkRequestManager()
