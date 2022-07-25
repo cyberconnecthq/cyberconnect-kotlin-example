@@ -4,6 +4,7 @@ import android.os.Build
 import androidx.annotation.NonNull
 import androidx.annotation.RequiresApi
 
+@RequiresApi(Build.VERSION_CODES.M)
 class CyberConnect(@NonNull private var walletAddress: String) {
     private val networkRequestManager = NetworkRequestManager()
     fun registerKey(signature: String, networkType: NetworkType, updateResults: (result: String) -> Unit) {
@@ -26,7 +27,6 @@ class CyberConnect(@NonNull private var walletAddress: String) {
         networkRequestManager.setAlias(this.walletAddress, toAddress,alias, network, updateResults)
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
     fun getPublicKeyString(): String? {
         return Utils().getPublicKeyString(this.walletAddress)
     }

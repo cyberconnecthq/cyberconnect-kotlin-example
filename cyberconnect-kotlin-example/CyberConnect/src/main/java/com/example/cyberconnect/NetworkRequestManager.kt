@@ -49,6 +49,7 @@ class NetworkRequestManager {
     @RequiresApi(Build.VERSION_CODES.M)
     fun registerKey(address: String, signature: String, network: NetworkType, updateResults: (result: String) -> Unit) {
         val client = OkHttpClient()
+        Utils().generatePublicKeyFor(address)
         val publicKeyString = Utils().getPublicKeyString(address)
         val message = "I authorize CyberConnect from this device using signing key:\n${publicKeyString}"
         val variable = Variables(address = address, signature = signature, network = network, message = message)
@@ -114,6 +115,7 @@ class NetworkRequestManager {
 
         val signature = Utils().signMessage(fromAddr, operationJsonString)
         val publicKey = Utils().getPublicKeyString(fromAddr)
+        assert(publicKey != null)
 
         if (signature != null) {
             val variables = Variables(

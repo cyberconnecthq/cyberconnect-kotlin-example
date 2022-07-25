@@ -6,6 +6,7 @@ import androidx.annotation.RequiresApi
 import com.example.cyberconnect.store.CryptoKeyStore
 import org.web3j.utils.Numeric
 
+@RequiresApi(Build.VERSION_CODES.M)
 class Utils {
     fun getAuthorizeString(@NonNull localPublicKeyPem: String): String {
         return "I authorize CyberConnect from this device using signing key:\n${localPublicKeyPem}"
@@ -15,7 +16,6 @@ class Utils {
         return "CyberConnectKey_${address}"
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
     fun signMessage(address: String, message: String): String? {
         return CryptoKeyStore().signMessage(address, message)
     }
@@ -47,9 +47,12 @@ class Utils {
         return res
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
     fun getPublicKeyString(address: String): String? {
         return CryptoKeyStore().getPublicKeyString(address)
+    }
+
+    fun generatePublicKeyFor(address: String) {
+        CryptoKeyStore().generateKeyPair(address)
     }
 }
 

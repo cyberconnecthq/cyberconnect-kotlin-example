@@ -3,6 +3,7 @@ package com.example.cyberconnect.store
 import android.os.Build
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
+import android.telephony.ims.ImsRegistrationAttributes
 import android.util.Base64
 import android.util.Log
 import androidx.annotation.RequiresApi
@@ -39,12 +40,12 @@ public final class CryptoKeyStore {
         }
 
         val certificate: Certificate? = ks.getCertificate(keyString)
-        val publicKey: PublicKey = if (certificate == null) {
-            generateKeyPair(address).public
+        return if (certificate == null) {
+            null
         } else {
-            certificate.publicKey
+            val publicKey = certificate.publicKey
+            Base64.encodeToString(publicKey.encoded, Base64.NO_WRAP)
         }
-        return Base64.encodeToString(publicKey.encoded, Base64.NO_WRAP)
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
