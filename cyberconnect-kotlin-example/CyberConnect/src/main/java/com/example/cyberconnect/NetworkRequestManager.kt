@@ -179,6 +179,7 @@ class NetworkRequestManager {
 
         val signature = Utils().signMessage(fromAddress, operationJsonString)
         val publicKey = Utils().getPublicKeyString(fromAddress)
+        assert(publicKey != null)
 
         val variables = Variables(
             fromAddr = fromAddress,
