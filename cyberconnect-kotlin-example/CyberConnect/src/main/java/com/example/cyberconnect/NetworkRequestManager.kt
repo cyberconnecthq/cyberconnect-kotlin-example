@@ -1,5 +1,8 @@
 package com.example.cyberconnect
+import android.annotation.SuppressLint
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import okhttp3.*
@@ -42,6 +45,8 @@ class NetworkRequestManager {
         })
     }
 
+    @SuppressLint("LongLogTag")
+    @RequiresApi(Build.VERSION_CODES.M)
     fun registerKey(address: String, signature: String, network: NetworkType, updateResults: (result: String) -> Unit) {
         val client = OkHttpClient()
         val publicKeyString = Utils().getPublicKeyString(address)
@@ -83,14 +88,18 @@ class NetworkRequestManager {
         })
     }
 
+    @RequiresApi(Build.VERSION_CODES.M)
     fun connect(fromAddr: String, toAddr: String, alias: String, network: NetworkType, connectType: ConnectionType, updateResults: (result: String) -> Unit) {
         connectOrDisconnect(true, fromAddr, toAddr, alias, network, connectType, updateResults)
     }
 
+    @RequiresApi(Build.VERSION_CODES.M)
     fun disconnect(fromAddr: String, toAddr: String, alias: String, network: NetworkType, connectType: ConnectionType, updateResults: (result: String) -> Unit) {
         connectOrDisconnect(false, fromAddr, toAddr, alias, network, connectType, updateResults)
     }
 
+    @SuppressLint("LongLogTag")
+    @RequiresApi(Build.VERSION_CODES.M)
     private fun connectOrDisconnect(isConnect: Boolean, fromAddr: String, toAddr: String, alias: String, network: NetworkType, connectType: ConnectionType, updateResults: (result: String) -> Unit) {
         val timestamp = Date().time
 
@@ -158,6 +167,7 @@ class NetworkRequestManager {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.M)
     fun setAlias(fromAddress: String, toAddress: String, alias: String, network: NetworkType, updateResults: (result: String) -> Unit) {
         val timestamp = Date().time
         val operation = Operation("follow", fromAddress, toAddress, "CyberConnect", network, alias, timestamp)

@@ -205,7 +205,7 @@ class MainActivity : AppCompatActivity() {
 
                 if (authorizeString != null) {
                     cyberconnectInstance?.registerKey(response.result.toString(), com.example.cyberconnect.NetworkType.ETH) { result ->
-                        Log.d("registerKey:", result)
+                        ToastUtils.showLong("registerKey:${result}")
                     }
                 }
             }
